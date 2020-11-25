@@ -1,0 +1,16 @@
+//Revision
+//Print all characters from ASCII table is decimal and hexadecimal form
+//from 32 to 126
+//Rifa Jamal z5311190
+//Created on 1/05/2020
+
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
+    int i = 32;
+    while (i < 127) {
+        printf("%3d 0x%x %c\n", i, i, i);
+        i = i + 1;
+    }
+    return 0;
+}
