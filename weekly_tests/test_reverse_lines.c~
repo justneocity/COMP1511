@@ -1,0 +1,29 @@
+//test reverse lines
+
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_LINE_LENGTH 256
+
+int main(void) {
+    
+    char alphabet_input[MAX_LINE_LENGTH];
+    
+    while (fgets(alphabet_input, MAX_LINE_LENGTH, stdin) != NULL) {
+        //find length of string
+        int length = 0;
+        while (alphabet_input[length] != '\0' 
+            && alphabet_input[length] != '\n') {
+            length++;
+        }
+        //loop through reverse
+        int i = length - 1;
+        while (i >= 0) {
+            putchar(alphabet_input[i]);
+            i--;
+        }   
+        printf("\n");
+    }
+    
+    return 0;   
+}  

@@ -1,0 +1,42 @@
+//Lab05 COMP1511
+//Created by Rifa Jamal (z5311190)
+//created on 16/03/2020
+
+// copy all of the values in source1 which are also found in source2 
+//into destination
+// return the number of elements copied into destination
+
+ #include <stdio.h>
+
+int common_elements(int length, int source1[length], int source2[length], 
+    int destination[length]) {
+    // PUT YOUR CODE HERE (you must change the next line!)
+    
+
+    int index1 = 0;
+    int index3 = 0;
+    //int *source[index] = &destination[length]
+    
+    while (index1 < length) {
+        int index2 = 0;
+        int found = 0;
+        
+        while (index2 < length && found != 1) {
+            if (source1[index1] == source2[index2]) {
+                destination[index3] = source1[index1];
+                index3++;
+                found = 1;
+            }
+            index2++;
+        }
+        index1++;
+    }
+    
+    return index3;
+}
+
+// You may optionally add a main function to test your common_elements function.
+// It will not be marked.
+// Only your common_elements function will be marked.
+
+

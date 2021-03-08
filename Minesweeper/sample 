@@ -1,0 +1,617 @@
+// It is a minesweeper game
+//
+// Version 1.0.0 (2020-03-08): Assignment released.
+// Version 1.0.1 (2020-03-08): Fix punctuation in comment.
+// Version 1.0.2 (2020-03-08): Stage 1 & Stage 2, missing taking input
+// Version 1.0.3 (2020-03-10): Stage 3 fixing bugs
+// Version 1.0.4 (2020-03-16): Refactorng code
+// Version 1.0.5 (2020-03-17): Stage 1, 2, 3 are done! ?? woot!
+// Version 1.0.6 (2020-03-24): Stage 4 - reveal radial done
+// Version 1.0.7 (2020-03-24): Stage 4 - safe first turn, implemented with bugs
+// Version 1.0.7 (2020-03-24): Stage 4 - DONE?!?!?!? ??
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Possible square states.
+#define VISIBLE_SAFE    0
+#define HIDDEN_SAFE     1
+#define HIDDEN_MINE     2
+
+// The size of the starting grid.
+#define SIZE 8
+
+// The possible command codes.
+#define DETECT_ROW              1
+#define DETECT_COL              2
+#define DETECT_SQUARE           3
+#define REVEAL_SQUARE           4
+#define GAMEPLAY_MODE           5
+#define DEBUG_MODE              6
+#define REVEAL_RADIAL           7
+
+// Add any extra #defines here.
+#define TRUE                    1
+#define FALSE                   0
+#define MAX_HINTS               3
+#define MAX_COMMANDS            4
+//Reveal_Radial Directions
+#define TOP                     0
+#define TOP_RIGHT               1
+#define RIGHT                   2
+#define BOT_RIGHT               3
+#define BOT                     4
+#define BOT_LEFT                5
+#define LEFT                    6
+#define TOP_LEFT                7
+#define END                     8
+
+void initialise_field(int minefield[SIZE][SIZE]);
+void print_debug_minefield(int minefield[SIZE][SIZE]);
+
+// Place your function prototyes here.
+int initialise_mines (int mineNum, int minefield[SIZE][SIZE]);
+int detect_row (int rowNum, int minefield[SIZE][SIZE]);
+int detect_column (int columnNum, int minefield[SIZE][SIZE]);
+int restrict_bounds (int num);
+int detect_square (int row, int column, int size, int minefield[SIZE][SIZE]);
+int reveal_square (int row, int column, int minefield[SIZE][SIZE], int *turn1);
+void reveal_rectangle (int rowStart, int rowEnd, int columnStart, int columnEnd, int minefield[SIZE][SIZE]);
+int gameWon (int numMines, int minefield[SIZE][SIZE]);
+void print_gameplay_minefield (int minefield[SIZE][SIZE], int gameOverLost);
+int reveal_radial (int row, int column, int minefield[SIZE][SIZE], int *turn1);
+void add_direction (int *row, int *column, int direction);
+int on_edge (int row, int column);
+void adjust_minefield (int row, int column, int minefield[SIZE][SIZE], int command);
+int adjust_row (int row, int factor);
+
+
+int main(void) {
+    int minefield[SIZE][SIZE];
+    initialise_field(minefield);
+    printf("Welcome to minesweeper!\n");
+    printf("How many mines? ");
+   
+    // Scan in the number of pairs of mines.
+    int mineNum;
+    scanf("%d", &mineNum);
+   
+    int successfulPlace = initialise_mines (mineNum, minefield);
+   
+    printf("Game Started\n");
+    print_debug_minefield(minefield);
+
+    // Scan in commands to play the game until the game ends.
+    // A game ends when the player wins, loses, or enters EOF (Ctrl+D).
+    // You should display the minefield after each command has been processed.
+   
+   
+    int gameCont = TRUE; //Where 1 = true, and 0 = false
+    int gameModeOn = FALSE;
+    int gameOverLost = FALSE;
+    int hints = 0;
+    int turn1 = TRUE;
+   
+    while (gameCont == TRUE) {
+       
+        //Take in the first command
+        int userInput[MAX_COMMANDS] = {0};
+        scanf("%d", &userInput[0]);
+        int command = userInput[0];
+        int endOfInput = FALSE;
+       
+        //Scan in the next values - based on the first command
+        if (command == DETECT_ROW || command == DETECT_COL) {
+            scanf("%d", &userInput[1]);
+        } else if (command == REVEAL_SQUARE || command == REVEAL_RADIAL) {
+            scanf("%d", &userInput[1]);
+            scanf("%d", &userInput[2]);
+        } else if (command == DETECT_SQUARE) {
+            scanf("%d", &userInput[1]);
+            scanf("%d", &userInput[2]);
+            scanf("%d", &userInput[3]);
+        } else if (command == GAMEPLAY_MODE || command == DEBUG_MODE) {
+            //The command == 5/6, so no need to take in input
+        } else {
+            //User may have CTRL + D, so account for that
+            gameCont = FALSE;
+            endOfInput = TRUE;
+        }
+       
+       
+        //Execute command
+        if (hints >= MAX_HINTS && (command == DETECT_ROW
+                                || command == DETECT_COL
+                                || command == DETECT_SQUARE)) {
+            printf("Help already used\n");
+        } else if (command == DETECT_ROW) {
+            int numberOfMines = detect_row(userInput[1], minefield);
+            printf("There are %d mine(s) in row %d\n"
+                    , numberOfMines, userInput[1]);
+            hints++;
+        } else if (command == DETECT_COL) {
+            int numberOfMines = detect_column(userInput[1], minefield);
+            printf("There are %d mine(s) in column %d\n"
+                    , numberOfMines, userInput[1]);
+            hints++;
+        } else if (command == DETECT_SQUARE) {
+            int numberOfMines = detect_square(userInput[1], userInput[2]
+                                            , userInput[3], minefield);
+            printf("There are %d mine(s) in the square centered"
+                   " at row %d, column %d  of size %d\n",
+                   numberOfMines, userInput[1], userInput[2], userInput[3]);
+            hints++;
+        } else if (command == REVEAL_SQUARE) {
+            gameOverLost = reveal_square(userInput[1], userInput[2], minefield, &turn1);
+            //If game has ended i.e. Won or Lost, stop running
+            if (gameWon(successfulPlace, minefield) == TRUE
+                || gameOverLost == TRUE) {
+                gameCont = FALSE;
+            }
+            turn1 = FALSE;
+        } else if (command == GAMEPLAY_MODE) {
+            printf("Gameplay mode activated\n");
+            gameModeOn = TRUE;
+        } else if (command == DEBUG_MODE) {
+            printf("Debug mode activated\n");
+            gameModeOn = FALSE;
+        } else if (command == REVEAL_RADIAL) {
+            gameOverLost = reveal_radial(userInput[1], userInput[2], minefield, &turn1);
+            //If game has ended i.e. Won or Lost, stop running
+            if (gameWon(successfulPlace, minefield) == TRUE
+                || gameOverLost == TRUE) {
+                gameCont = FALSE;
+            }
+            turn1 = FALSE;
+        } else {
+            //User input wasn't entered, or something went wrong
+            //So do nothing
+        }
+       
+        if (gameOverLost == TRUE) {
+            printf("Game over\n");
+        }
+       
+        //Print minefield - gameover, gameplay, debug
+        if (gameModeOn == TRUE && endOfInput == FALSE) { //Game Won/GameMode
+            print_gameplay_minefield(minefield, gameOverLost);
+        } else if (gameModeOn == FALSE && endOfInput == FALSE) { //Debug mode
+            print_debug_minefield(minefield);
+        } else {
+            //Do nothing
+        }
+       
+       
+    }
+
+    return 0;
+}
+
+// Set the entire minefield to HIDDEN_SAFE.
+void initialise_field(int minefield[SIZE][SIZE]) {
+    int i = 0;
+    while (i < SIZE) {
+        int j = 0;
+        while (j < SIZE) {
+            minefield[i][j] = HIDDEN_SAFE;
+            j++;
+        }
+        i++;
+    }
+}
+
+//Take in user mine coordinates and place them on the grid
+int initialise_mines (int mineNum, int minefield[SIZE][SIZE]) {
+
+    printf("Enter pairs:\n");
+   
+    // Scan in the pairs of mines and place them on the grid.
+    int row, column;
+    int attemptedPlace = 0;
+    int successfulPlace = 0;
+   
+    while (attemptedPlace < mineNum) {
+        scanf("%d %d", &row, &column);
+       
+        //If coordinates valid -> place a mine
+        if (row >= 0 && row < SIZE && column >= 0 && column < SIZE) {
+            minefield[row][column] = HIDDEN_MINE;
+            successfulPlace++;
+        }
+        attemptedPlace++;        
+    }
+   
+    return successfulPlace;
+}
+
+// Print out the actual values of the minefield.
+void print_debug_minefield(int minefield[SIZE][SIZE]) {
+    int i = 0;
+    while (i < SIZE) {
+        int j = 0;
+        while (j < SIZE) {
+            printf("%d ", minefield[i][j]);
+            j++;
+        }
+        printf("\n");
+        i++;
+    }
+}
+
+//Detect number of mines in a row.
+int detect_row (int rowNum, int minefield[SIZE][SIZE]) {
+    int numMines = 0;
+    int counter = 0;
+    while (counter < SIZE) {
+        if (minefield[rowNum][counter] == HIDDEN_MINE) {
+            numMines++;
+        }
+        counter++;
+    }
+   
+    return numMines;
+}
+
+//Detect number of mines in a column.
+int detect_column (int columnNum, int minefield[SIZE][SIZE]) {
+    int numMines = 0;
+    int counter = 0;
+    while (counter < SIZE) {
+        if (minefield[counter][columnNum] == HIDDEN_MINE) {
+            numMines++;
+        }
+        counter++;
+    }
+   
+    return numMines;
+}
+
+//Adjust num to 0 or SIZE - 1 if it's out of bounds
+int restrict_bounds (int num) {
+
+    if (num >= SIZE - 1) {
+        num = SIZE - 1;
+    }
+    if (num <= 0) {
+        num = 0;
+    }
+   
+    return num;
+}
+
+//Detect number of mines in a square of a size centered on a coordinate
+int detect_square (int row, int column, int size, int minefield[SIZE][SIZE]) {
+    int numMines = 0;
+   
+    //Revealed area surrounding coordinates
+    int adjustFactor = size / 2; //size is always odd - truncated .5
+    int rowStart = row - adjustFactor;
+    int rowEnd = row + adjustFactor;
+    int columnStart = column - adjustFactor;
+    int columnEnd = column + adjustFactor;
+   
+    //Adjust if outside range
+    rowEnd = restrict_bounds(rowEnd);
+    rowStart = restrict_bounds(rowStart);
+    columnEnd = restrict_bounds(columnEnd);
+    columnStart = restrict_bounds(columnStart);
+   
+    // Look for mines within surrounding coordinates square
+    int currentRow = rowStart;
+    while (currentRow <= rowEnd) {
+        int currentColumn = columnStart;
+        while (currentColumn <= columnEnd) {
+            if (minefield[currentRow][currentColumn] == HIDDEN_MINE) {
+                numMines++;
+            }
+            currentColumn++;
+        }
+        currentRow++;
+    }
+   
+    return numMines;
+}
+
+//Reveal 3x3 Square around selected tile
+int reveal_square (int row, int column, int minefield[SIZE][SIZE], int *turn1) {
+    int gameOver = FALSE;
+    //Revealed area surrounding coordinates
+    int rowStart = row - 1;
+    int rowEnd = row + 1;
+    int columnStart = column - 1;
+    int columnEnd = column + 1;
+   
+    //Adjust if outside range
+    rowEnd = restrict_bounds(rowEnd);
+    rowStart = restrict_bounds(rowStart);
+    columnEnd = restrict_bounds(columnEnd);
+    columnStart = restrict_bounds(columnStart);
+   
+    //If selected square has mine indicate game over
+    if (minefield[row][column] == HIDDEN_MINE) {
+        if (*turn1 == TRUE) {
+            adjust_minefield (row, column, minefield, REVEAL_SQUARE);
+            *turn1 = FALSE;
+        } else {
+            gameOver = TRUE;
+        }
+    } else {
+        //Check number of mines in rectangle
+        int numMines = detect_square(row, column, 3, minefield);
+       
+        //If no mines, or if there are mines, reveal squares
+        if (numMines == 0) {
+            reveal_rectangle(rowStart, rowEnd, columnStart, columnEnd, minefield);
+        } else {
+            minefield[row][column] = VISIBLE_SAFE;
+        }
+       
+    }
+   
+    return gameOver;
+   
+}
+
+//Function to reveal all mines in a rectangle - given all start end coordinates
+void reveal_rectangle (int rowStart, int rowEnd, int columnStart, int columnEnd, int minefield[SIZE][SIZE]) {
+    int currentRow = rowStart;
+    while (currentRow <= rowEnd) {
+        int currentColumn = columnStart;
+        while (currentColumn <= columnEnd) {
+            minefield[currentRow][currentColumn] = VISIBLE_SAFE;
+            currentColumn++;
+        }
+        currentRow++;
+    }
+   
+}
+
+//Function to check if a game has been won
+int gameWon (int numMines, int minefield[SIZE][SIZE]) {
+    int gameWon = FALSE;
+    int numSafe = 0;
+    int row = 0;
+   
+    //Count number of VISIBLE_SAFE
+    while (row < SIZE) {
+        int column = 0;
+        while (column < SIZE) {
+            if (minefield[row][column] == VISIBLE_SAFE) {
+                numSafe++;
+            }
+            column++;
+        }
+        row++;
+    }
+   
+    //If all tiles are revealed
+    if (numSafe == (SIZE * SIZE) - numMines){
+        gameWon = TRUE;
+        printf("Game Won!\n");
+    }
+   
+    return gameWon;
+}
+
+//Print gameplay minefield
+void print_gameplay_minefield (int minefield[SIZE][SIZE], int gameOverLost) {
+    if (gameOverLost == TRUE) {
+        printf("xx\n");
+        printf("/\\\n");
+       
+    } else {
+        printf("..\n");
+        printf("\\/\n");
+    }
+   
+    printf("    00 01 02 03 04 05 06 07\n");
+    printf("   -------------------------\n");
+   
+    int row = 0;
+    while (row < SIZE) {
+        printf("0%d |", row);
+        int column = 0;
+        while (column < SIZE) {
+            //Print mine row
+            if (minefield[row][column] == VISIBLE_SAFE) {
+                int numMines = detect_square(row, column, 3, minefield);
+                //Print square - depending on number of mines
+                if (numMines == 0) {
+                    printf("  ");
+                } else {
+                    printf("0%d", numMines);
+                }
+               
+                //Print "  " or "|" depending on if last element in array
+                if (column < SIZE - 1) {
+                    printf(" ");
+                } else {
+                    printf("|\n");
+                }
+               
+               
+            } else {
+                //If game is over - print () for mines, else print ##
+                if (gameOverLost == TRUE) {
+                    if (minefield[row][column] == HIDDEN_MINE) {
+                        printf("()");
+                    } else {
+                        printf("##");
+                    }
+                } else {
+                    printf("##");
+                }
+               
+                //Print   or | depending on if last element in array
+                if (column < SIZE - 1) {
+                    printf(" ");
+                } else {
+                    printf("|\n");
+                }
+               
+            }
+            column++;
+        }
+        row++;
+    }
+   
+    printf("   -------------------------\n");
+}
+
+int reveal_radial (int row, int column, int minefield[SIZE][SIZE], int *turn1) {
+    //Check and/or Reveal Selected Square
+    int gameOverLost = FALSE;
+    int direction = TOP;
+    int skip = FALSE;
+    if (minefield[row][column] == HIDDEN_MINE) {
+        if (*turn1 == TRUE) {
+            adjust_minefield (row, column, minefield, REVEAL_RADIAL);
+            *turn1 = FALSE;
+            skip = TRUE;
+        } else {
+            gameOverLost = TRUE;
+            direction = END;
+        }
+    } else {
+        int numMines = detect_square(row, column, 3, minefield);
+        if (numMines == 0) {
+            direction = TOP;
+        } else {
+            direction = END;
+        }
+        minefield[row][column] = VISIBLE_SAFE;
+    }
+   
+    if (skip == FALSE) {
+        //Iterate and reveal the 8 directions
+        while (direction != END) {
+            int currentRow = row;
+            int currentColumn = column;
+            int finish = FALSE;
+            //Check and/or reveal each direction
+            while (finish == FALSE) {
+                //Check if coordinate on edge, if so finish = TRUE;
+                finish = on_edge(currentRow, currentColumn);
+                //If not on edge adjust and keep going
+                if (finish == FALSE) {
+                    //Change coordinates based on direction
+                    add_direction(&currentRow, &currentColumn, direction);
+                    finish = on_edge(currentRow, currentColumn);
+                   
+                    int numMines = detect_square(currentRow, currentColumn, 3, minefield);
+                    if (numMines > 0) {
+                        finish = TRUE;
+                    }
+                   
+                    minefield[currentRow][currentColumn] = VISIBLE_SAFE;
+                }
+            }
+           
+            direction++;
+           
+        }
+    }
+   
+    return gameOverLost;
+}
+
+//Based on direction change the row and column to the next one
+void add_direction (int *row, int *column, int direction) {
+    if (direction == TOP) {
+        *row = *row - 1;
+    } else if (direction == TOP_RIGHT) {
+        *row = *row - 1;
+        *column = *column + 1;
+    } else if (direction == RIGHT) {
+        *column = *column + 1;
+    } else if (direction == BOT_RIGHT) {
+        *row = *row + 1;
+        *column = *column + 1;
+    } else if (direction == BOT) {
+        *row = *row + 1;
+    } else if (direction == BOT_LEFT) {
+        *row = *row + 1;
+        *column = *column - 1;
+    } else if (direction == LEFT) {
+        *column = *column - 1;
+    } else if (direction == TOP_LEFT) {
+        *row = *row - 1;
+        *column = *column - 1;
+    } else {
+        //Direction == End and this should not have run...
+    }
+   
+}
+
+//Check if square is on the edge
+int on_edge (int row, int column) {
+    int onEdge = FALSE;
+    if (row == 0 || row == SIZE - 1 || column == 0 || column == SIZE - 1) {
+        onEdge = TRUE;    
+    }  
+   
+    return onEdge;  
+}
+
+//Shift the field for a safe turn 1
+void adjust_minefield (int row, int column, int minefield[SIZE][SIZE], int command) {
+    //Find the adjustment factor
+    int currentRow = row;
+    int currentColumn = column;
+    int adjustFactor = 0;
+    while (minefield[currentRow][currentColumn] == HIDDEN_MINE) {
+        adjustFactor++;
+        currentRow++;
+    }
+   
+    //Adjust the HIDDEN_MINEs in the minefield by the adjustment factor
+    int safeMinefield[SIZE][SIZE];
+    initialise_field(safeMinefield);
+    currentRow = 0;
+    while (currentRow < SIZE) {
+        currentColumn = 0;
+        while (currentColumn < SIZE) {
+            //Adjust if there is a mine
+            if (minefield[currentRow][currentColumn] == HIDDEN_MINE) {
+                int adjustedRow = adjust_row(currentRow, adjustFactor);
+                safeMinefield[adjustedRow][currentColumn] = HIDDEN_MINE;
+            }
+            currentColumn++;
+        }
+        currentRow++;
+    }
+   
+    //Swap the minefields
+    initialise_field(minefield);
+    currentRow = 0;
+    while (currentRow < SIZE) {
+        currentColumn = 0;
+        while (currentColumn < SIZE) {
+            if (safeMinefield[currentRow][currentColumn] == HIDDEN_MINE) {
+                minefield[currentRow][currentColumn] = HIDDEN_MINE;
+            }
+            currentColumn++;
+        }
+        currentRow++;
+    }
+   
+    //Recall the calling function
+    if (command == REVEAL_SQUARE){
+        reveal_square(row, column, minefield, FALSE);
+    } else if (command == REVEAL_RADIAL) {
+        reveal_radial(row, column, minefield, FALSE);
+    } else {
+        //Something has gone horribly wrong
+    }
+
+}
+
+//Adjust row based on adjustment factor
+int adjust_row (int row, int factor) {
+    int adjustedRow = row + factor;
+    if (adjustedRow > SIZE - 1) {
+        adjustedRow = adjustedRow - SIZE;
+    }
+   
+    return adjustedRow;
+}

@@ -1,0 +1,20 @@
+//This program is used to add numbers
+//Written 24/02/2020d
+//by Rifa Jamal z5311190
+//for COMP1511 Lab 02 Exercise 2
+
+#include <stdio.h>
+int main(void) {
+    int number1, number2;
+    
+    //Enter two numbers to add
+    printf("Please enter two integers: ");
+    scanf("%d %d", &number1, &number2);
+ 
+    //Calculate and report sum
+    int sum = number1 + number2;
+    printf("%d + %d = %d\n", number1, number2, sum);   
+    
+    return 0;
+
+}

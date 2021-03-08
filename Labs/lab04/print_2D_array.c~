@@ -1,0 +1,50 @@
+// Print a 2D array
+//Rifa Jamal
+//z5311190
+//Created on 14/03/2020
+//COMP1511 lab04
+
+#include <stdio.h>
+
+#define SIZE 4
+
+void print_2D_array(int array[SIZE][SIZE]);
+
+
+int main(void) {
+    int array[SIZE][SIZE] = {
+        {0, 1, 2, 3}, 
+        {4, 5, 6, 7}, 
+        {8, 9, 10, 11}, 
+        {12, 13, 14, 15}
+    };
+    print_2D_array(array);
+    return 0;
+}
+
+void print_2D_array(int array[SIZE][SIZE]) {
+    //TODO: Fill in this function
+
+    #define SIZE 4
+       
+    int row = 0;
+    
+    while (row < SIZE) {
+       
+        int col = 0;
+       
+        while (col < SIZE) {
+            if(array[row][col] < 10) {
+                printf("0%d ", array[row][col]);
+            } else if (array[row][col] >= 10) {
+                printf("%d ", array[row][col]);
+            }
+            col++;
+        }
+        row++;
+    
+    
+        printf("\n");
+
+    }   
+}

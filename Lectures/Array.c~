@@ -1,0 +1,67 @@
+//Lecture 6 Week 3 COMP1511
+//Rifa Jamal z5311190
+//4/03/2020
+//A program that  track player's socres in a game
+
+#include <stdio.h>
+
+#define NUM_PLAYERS 4
+
+void displayScores(int scoreArray[NUM_PLAYERS]);
+
+int main(void) {
+
+    int scores[NUM_PLAYERS] = {0};
+    
+  /*  scores[0] = 2;
+    scores[1] = 65;
+    scores[2] = 1;
+    scores[3] = 40; */
+    
+    //Take score inout from the user
+    int inputCounter = 0;
+    while (inputCounter < NUM_PLAYERS) {
+        printf("Please type in Player %d's score: ", inputCounter)
+        scanf("%d", &scores[inputCounter]);
+        inputCounter++;
+    }
+    
+   displayScores(scores);
+
+    //loop through and find the cuurent winner (highest score)
+    int i = 0;
+    int currentHighest = -1; //assuming socres are > 0
+    int indexHighest = -1;
+    
+    while (i < NUM_PLAYERS) {
+        if (scores[i] > currentHighest) {
+            // i is the highest scored player 
+            indexHighest = i;
+            currentHighest = scores[i];
+        }
+        i++;
+   
+    }
+    printf("Player %d is currently winning with a score of %d\n",
+        indexHighest, currentHighest); 
+    
+    return 0;
+}
+
+//Print all cuurent socres to the terminal
+void displayScores (int scoreArray[]) {
+   // cant do this bc this set of curly brackets is different from top one. printf("%d", scores[0]);
+   //can do printf("%d", scoreArray[0]); and copy paste but change [1], [2] etc
+   //but that is too long so use loops
+    //loop to go print all elemnets
+    
+    int i = 0;
+    while (i < NUM_PLAYERS) { // have processed i number of players
+    printf("Player %d's score is %d\n", i,  scoreArray[i]);
+        
+        i++; 
+    } //i == NUM_PLAYERS
+    
+ 
+   
+}

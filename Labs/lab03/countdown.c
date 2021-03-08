@@ -1,0 +1,23 @@
+//Lab03 Countdown from 10 to 0
+//Rifa Jamal z5311190
+//2/03/2020
+
+#include <stdio.h>
+
+int main(void) {
+
+    //initialise counter to 10
+    int counter = 10;
+    
+    //loop until not >=0
+    while (counter >= 0) {
+    
+        //print counuer
+        printf("%d\n", counter);
+    
+        //decrease counter
+        counter = counter - 1;
+    }
+    return 0;
+
+}

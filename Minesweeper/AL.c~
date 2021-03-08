@@ -1,0 +1,226 @@
+// Assignment 1 20T1 COMP1511: Minesweeper
+// minesweeper.c
+//
+// 
+// on 22/03/20
+//
+// Version 1.0.0 (2020-03-08): Assignment released.
+// Version 1.0.1 (2020-03-08): Fix punctuation in comment.
+// Version 1.0.2 (2020-03-08): Fix second line of header comment to say minesweeper.c
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Possible square states.
+#define VISIBLE_SAFE    0
+#define HIDDEN_SAFE     1
+#define HIDDEN_MINE     2
+
+// The size of the starting grid.
+#define SIZE 8
+
+// The possible command codes.
+#define DETECT_ROW              1
+#define DETECT_COL              2
+#define DETECT_SQUARE           3
+#define REVEAL_SQUARE           4
+#define GAMEPLAY_MODE           5
+#define DEBUG_MODE              6
+#define REVEAL_RADIAL           7
+
+
+void initialise_field(int minefield[SIZE][SIZE]);
+void print_debug_minefield(int minefield[SIZE][SIZE]);
+
+// Place your function prototyes here.
+// Inputing functions to be called upon in the main function
+void detect_row(int minefield[SIZE][SIZE]);
+void detect_col(int minefield[SIZE][SIZE]); 
+void detect_square(int minefield[SIZE][SIZE]);   
+
+
+// Main Function, where the program execution will take place
+int main(void) {
+    int minefield[SIZE][SIZE];
+    initialise_field(minefield);
+    printf("Welcome to minesweeper!\n");
+    // User will input an integer to determine the number of mines
+    printf("How many mines? ");
+    int mine;
+    scanf("%d", &mine);
+    
+    
+    // User will be required to enter pairs of integers
+    // These will be the locations of the mines on the grid
+    printf("Enter pairs:\n"); 
+    int row = 0; 
+    int column = 0;
+    int counter01 = 0;
+    // The counter variable is dependent on the number of mines 
+    // The while loop will repeat until all the mines are given coordinates
+    while (counter01 < mine) {
+        scanf("%d %d", &row, &column);
+        // To make sure the user??s input is within the confines of the array
+        if (row >= 0 && row <= SIZE &&
+        column >= 0 && column < SIZE) {
+            minefield[row][column] = HIDDEN_MINE;
+        }
+        counter01++;
+    }
+    
+    
+    // The mines have been placed so now the game can begin ! 
+    printf("Game Started\n");
+    print_debug_minefield(minefield);
+    int command_num = 1;
+    int mine_row = 0;
+    int mine_col = 0;
+    int total_mines = 0;
+    //To ensure command_num is getting an input
+    while (command_num > 0) { 
+        // While loop to read which function the user wants to call upon each time
+        command_num = 0;
+        scanf("%d", &command_num);
+        // This function will reveal how many mines are in the row or column 
+        mine_row = 0;
+        mine_col = 0;
+        total_mines = 0;
+        if (command_num == DETECT_ROW) {// If 1 is entered rows will be scanned
+            scanf("%d", &mine_row);
+            while (mine_col < SIZE) {
+        // All the elements in the row will be scanned
+        // This will require going across the columns of the chosen row
+                if (minefield[mine_row][mine_col] == HIDDEN_MINE) {
+                    // Mines in the row are accumulated into a variable
+                    total_mines += 1;
+                } // Adds 1 to column each loop to scan through the row
+                mine_col++;
+            }
+            printf("There are %d mine(s) in row %d \n", total_mines, mine_row );
+            // Minefield is reprinted after the information is given
+            print_debug_minefield(minefield);    
+            
+           
+        // If 2 is entered, a different function is called so columns are scanned 
+        } else if (command_num == DETECT_COL) { 
+            //scanf("%d", &command_num);
+            scanf("%d", &mine_col);
+            while (mine_row < SIZE) {
+            // All the elements in the column will be scanned
+            // This will require going down all the rows of the chosen column
+                if (minefield[mine_row][mine_col] == HIDDEN_MINE) {
+                    // Mines in the column are accumulated into a variable
+                    total_mines += 1;
+                } // Adds 1 to row each loop to scan through the column
+                mine_row += 1;
+            }
+            printf("There are %d mine(s) in column %d \n", total_mines, mine_col);          
+            // Minefield is reprinted after the information is given
+            print_debug_minefield(minefield);         
+        
+        // If 3 is entered, the user wishes to detect squares
+        //scanf("%d", &command_num);
+       
+        } else if (command_num == DETECT_SQUARE) {
+            int square_row;
+            int square_col;
+            int square_size;
+            int mines_in_square = 0;
+            
+            scanf("%d %d %d", &square_row, &square_col, &square_size);
+            
+            int top_row = square_row - ((square_size - 1)/ 2);
+            int bottom_row = square_row + ((square_size - 1)/2);
+            
+            int left_col = square_row - ((square_size - 1)/ 2);
+            int right_col = square_row + ((square_size - 1)/ 2);
+            
+            
+        int currentRow = top_row;
+    while (currentRow <= bottom_row) {
+        int currentColumn = left_col;
+        while (currentColumn <= right_col) {
+            if (minefield[currentRow][currentColumn] == HIDDEN_MINE) {
+                mines_in_square++;
+            }
+            currentColumn++;
+        }
+        currentRow++;
+    }
+   
+
+                                  
+        printf("There are %d mine(s) in the square centred at row %d, column %d of size %d \n", mines_in_square, square_row, square_col, square_size);          
+        // Minefield is reprinted after the information is given
+        print_debug_minefield(minefield);
+        }
+    }
+        
+        
+        
+        
+        
+        
+        
+        
+        /*} else if (command_num == DETECT_SQUARE) {
+            int square_row = 0;
+            int square_col = 0;
+            int square_size = 0;
+            scanf("%d %d %d", &square_row, &square_col, &square_size);
+            int mines_in_square = 0;
+            int top_row = square_row - ((square_size - 1)/ 2);
+            int bottom_row = square_row + ((square_size - 1)/2);
+            int left_col = square_col - ((square_size - 1)/ 2);
+            int right_col = square_col + ((square_size - 1)/ 2);
+            while (top_row < bottom_row && top_row > 0) {
+                top_row = square_row - ((square_size - 1)/ 2);
+                while (left_col < right_col && left_col > 0) {
+                    if (minefield[top_row][left_col] == HIDDEN_MINE) {
+                        mines_in_square += 1;
+                    }   
+                    left_col++;   
+                }     
+                top_row++; 
+            }                                 
+            printf("There are %d mine(s) in the square centred at row %d, column %d of size %d \n", mines_in_square, square_row, square_col, square_size);          
+            // Minefield is reprinted after the information is given
+            print_debug_minefield(minefield);
+        }
+    }*/
+    
+    
+    return 0;
+}
+
+
+// Set the entire minefield to HIDDEN_SAFE.
+void initialise_field(int minefield[SIZE][SIZE]) {
+    int i = 0;
+    while (i < SIZE) {
+        int j = 0;
+        while (j < SIZE) {
+            minefield[i][j] = HIDDEN_SAFE;
+            j++;
+        }
+        i++;
+    }
+}
+
+// Print out the actual values of the minefield.
+void print_debug_minefield(int minefield[SIZE][SIZE]) {
+    int i = 0;
+    while (i < SIZE) {
+        int j = 0;
+        while (j < SIZE) {
+            printf("%d ", minefield[i][j]);
+            j++;
+        }
+        printf("\n");
+        i++;
+    }
+}
+
+
+
+

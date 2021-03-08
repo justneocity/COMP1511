@@ -1,0 +1,105 @@
+//trial andre
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Possible square states.
+#define VISIBLE_SAFE    0
+#define HIDDEN_SAFE     1
+#define HIDDEN_MINE     2
+
+// The size of the starting grid.
+#define SIZE 8
+
+// The possible command codes.
+#define DETECT_ROW              1
+#define DETECT_COL              2
+#define DETECT_SQUARE           3
+#define REVEAL_SQUARE           4
+#define GAMEPLAY_MODE           5
+#define DEBUG_MODE              6
+#define REVEAL_RADIAL           7
+
+// Add any extra #defines here.
+
+void initialise_field(int minefield[SIZE][SIZE]);
+void print_debug_minefield(int minefield[SIZE][SIZE]);
+
+// functions to detect number of mines in row or column
+void detect_mines_row(int minefield[SIZE][SIZE]);
+void detect_mines_column(int minefield[SIZE][SIZE]);
+
+// Place your function prototyes here.
+
+int main(void) {
+    int minefield[SIZE][SIZE];
+    initialise_field(minefield);
+    
+    int mines;
+    
+    //detect_mines_row(minefield);
+    //detect_mines_column(minefield);
+    
+    
+    // TODO: Scan in the number of pairs of mines.
+    
+    printf("Welcome to minesweeper!\n");
+    printf("How many mines? ");
+    scanf("%d", &mines);
+    
+    
+    // TODO: Scan in the pairs of mines and place them on the grid.
+    
+    int row = 0; 
+    int column = 0;
+    
+    printf("Enter pairs:\n");
+    
+    int counter = 0;
+    while (counter < mines) {
+        scanf("%d %d", &row, &column);
+        
+        if (row < SIZE && column < SIZE) {
+            minefield[row][column] = HIDDEN_MINE;
+        }
+        counter ++;
+    
+    }
+    
+    printf("Game Started\n");
+    print_debug_minefield(minefield);  
+
+    // TODO: Scan in commands to play the game until the game ends.
+    // A game ends when the player wins, loses, or enters EOF (Ctrl+D).
+    // You should display the minefield after each command has been process
+    
+    
+    int loop_counter = 0;
+    int command = 0;
+    int rc_number = 0; 
+    
+    while (loop_counter <= SIZE) {
+        scanf("%d %d", &command, &rc_number);
+        if(command == DETECT_ROW)
+            int i_row = 0;
+            while(i_row < SIZE){
+                if(minefield[rc_number][i_row] == HIDDEN_MINE) {
+                }
+            i_row++;
+            printf("There are %d mines in row %d\n", i_row, rc_number);
+            }
+        else if(command == DETECT_COL) {
+            int i_col = 0;
+            while(i_col < SIZE){
+                if(minefield[rc_number][i_col] == HIDDEN_MINE) {
+                }
+            i_row++;
+            printf("There are %d mines in row %d\n", i_col, rc_number);
+            }
+        }
+        loop_counter++;
+    }
+    
+    
+    

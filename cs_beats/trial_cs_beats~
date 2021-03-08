@@ -1,0 +1,493 @@
+//random cs_beats
+
+//stage 1
+
+// Add a note to the end of a beat.
+int add_note_to_beat(Beat beat, int octave, int key) {
+
+    insert_end(&note_one, x);
+    
+    printf("Added note successfully!\n");
+}
+
+struct note *insert_end(struct note *note_one, int x) {
+    //struct note *note_one = NULL;
+    //int x = 0;
+    
+    //create new node, need pointer note 
+    struct note *note;
+    struct note *current;
+    note = (struct note *)malloc(sizeof(struct note));
+    note->data = x;
+    note->next = NULL;
+    
+    //check if linked list is empty or note_compare
+    //if empty add a new note and note_one-> NULL
+    
+    if (note_one == NULL) {
+        //return note;
+    }
+    //this is where we will check all the conditions to add note
+    else {
+        current = note_one;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        //check conditions with end of list and new note 
+        
+        //compare octave
+        if (note->octave > current->octave) {
+            current->next = note;
+            return VALID_NOTE;
+        } else if (note->octave == current->octave) {
+        //check key
+        if (note->key == current->key) {
+            return NOT_HIGHEST_NOTE;
+        } else if (note->key > current->key) {
+            current->next = note;
+            return VALID_NOTE;
+        } else if (note->key < current->key) {
+            return INVALID_KEY;
+        }
+        } else if (note->octave < current->octave) {
+            return INVALID_OCTAVE;
+        }
+    
+    }  
+    
+}
+
+
+//check if linked list is empty or note_compare
+    //if empty add a new note and note_one-> NULL
+    
+    if (note_one == NULL) {
+        note_one->next = new_note;
+        return VALID_NOTE;     
+    }
+    //this is where we will check all the conditions to add note
+    else if (note_one != NULL) {
+        current = note_one;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        //check conditions with end of list and new note 
+        
+        //compare octave
+        if (new_note->octave > current->octave
+            || (new_note->key == current->key 
+            && new_note->key > current->key)) {
+            current->next = new_note;
+        }
+        printf("Added note successfully!\n");  
+        return VALID_NOTE;
+    } else if (note_one != NULL) {
+        current = note_one;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        
+        if (new_note->octave == current->octave
+            && new_note->key == current->key) {
+            current->next = current;
+         }
+         return NOT_HIGHEST_NOTE;
+     
+     } else if (note_one != NULL) {
+        current = note_one;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        
+        if (new_note->octave == current->octave
+            && new_note->key < current->key) {
+            current->next = current;
+         }
+         return INVALID_KEY;
+     
+     } else {
+        return INVALID_OCTAVE;
+     }
+     
+     
+     //stage 3
+     
+     
+    struct beat *p;
+    struct beat *q;
+    
+    q = track->head;
+    p = track->head->next;
+    
+    //if track is not empty and beat is selected
+    if (track->selected_beat != NULL && track->head != NULL) {
+        //case 1: selected_beat is head
+        if (track->selected_beat == q) {
+            track->head = p;
+            //printf("hello there");
+            if (p == NULL) {
+                free_track(track);
+                return TRACK_STOPPED;
+            } else {
+                free_beat(p);
+                return select_next_beat(track);
+            }  
+            /*if (p == NULL) {
+                //track->selected_beat = NULL;
+                return select_next_beat(track);
+                //return TRACK_STOPPED;
+            } else {
+                //track->selected_beat = p->next;
+                //return TRACK_PLAYING;
+                return select_next_beat(track);
+            }*/
+        //case 2: selected_beat not at head   
+        } else {
+            while (p != track->selected_beat) {
+                p = p->next;
+                q = q->next;
+            }
+            
+            //selected beat at end of track
+            if (p->next == NULL) {
+                q->next = NULL;
+                free_beat(p);
+                //track->selected_beat = NULL;
+                //return TRACK_STOPPED;
+                return select_next_beat(track);
+            //selected_beat in middle
+            } else {
+                q->next = p->next;
+                //printf("hello");
+                free_beat(track->selected_beat);
+                //track->selected_beat = p->next;
+            
+                //return TRACK_PLAYING;
+                return select_next_beat(track);
+            }
+        }
+    
+    } else {
+        if (q == track->selected_beat) {
+            track->head = p;
+            free_beat(p);
+        }
+        return TRACK_STOPPED;
+    }
+    
+    
+    //trail stage 4
+    
+    
+    //create a new struct new note an current that traverses the list
+    struct note *new_note = malloc(sizeof(struct note));
+    struct note *current;
+    
+ 
+    //allocate new note its octaves and keys that were inputted
+    new_note = musical_notation[20];
+    new_note->next = NULL;
+    
+    current = beat->notes;
+    
+    int i;
+    int j;
+      
+    //check for invalid octave and invalid key   
+    if (i < '0' || i > '9') {
+        return INVALID_MUSICAL_NOTE;
+    } else if (j < 'A' || j > 'G') {
+        return INVALID_MUSICAL_NOTE;
+    } else {      
+        //if list is empty add the first note
+        if (current == NULL) {
+            beat->notes = new_note[i][j];
+        //list is not empty
+        } else {
+            
+            //check if same note
+            if (current[i][j] == current->next[i][j]) {
+                return INVALID_MUSICAL_NOTE;
+            }
+            
+            //if list not empty, traverse and add in increasing order
+            while (current->next != NULL 
+                && current[i][j] < current->next[i][j]) {
+                current = current->next;
+            }
+                                         
+                //add new note
+                //make the ascii value of letters into numbers
+                j = j - 16;
+                current->next = new_note[i][j];   
+            
+        }
+        return VALID_NOTE;
+    }
+
+  
+}
+
+//stage 4 two
+
+//create a new struct new note an current that traverses the list
+    struct note *new_note = malloc(sizeof(struct note));
+    struct note *current;
+    
+ 
+    //allocate new note its octaves and keys that were inputted
+    new_note->octave = musical_notation[0];
+    new_note->key = musical_notation[1];
+    new_note->next = NULL;
+    
+    current = beat->notes;
+    
+    //find how many # entered
+    int length = strlen(musical_notation);
+      
+    //check for invalid octave and invalid key   
+    if (new_note->octave < '0' || new_note->octave > '9') {
+        return INVALID_MUSICAL_NOTE;
+    } else if (new_note->key < 'A' || new_note->key > 'G') {
+        return INVALID_MUSICAL_NOTE;
+    } else {  
+        
+        new_note->octave = new_note->octave - 48;
+        //change letters to keys
+        if (new_note->key == 'A') {
+            new_note->key = new_note->key - 65 + length - 2;
+        } else if (new_note->key == 'B') {
+            new_note->key = new_note->key - 64 + length - 2;
+        } else if (new_note->key == 'C') {
+            new_note->key = new_note->key - 64 + length - 2;
+        } else if (new_note->key == 'D') {
+            new_note->key = new_note->key - 63 + length - 2;
+        } else if (new_note->key == 'E') {
+            new_note->key = new_note->key - 62 + length - 2;
+        } else if (new_note->key == 'F') {
+            new_note->key = new_note->key - 62 + length - 2;
+        } else if (new_note->key == 'G') {
+            new_note->key = new_note->key - 61 + length - 2;
+        } 
+        
+        while (new_note->key >= 12) {
+            new_note->key = new_note->key - 12;
+            new_note->octave = new_note->octave + 1;
+        }
+
+        
+        //if list is empty add the first note
+        if (current == NULL) {
+            beat->notes = new_note;
+        //list is not empty
+        } else {
+            
+            //check if same note
+            if (current == current->next) {
+                return INVALID_MUSICAL_NOTE;
+            }
+            
+            struct note *temp = NULL;
+            //if list has > 1 note, traverse and add in increasing order
+            if (current->next != NULL && new_note->octave <= current->octave
+                    && new_note->key < current->key) {
+            
+                while (current->next != NULL
+                    && new_note->octave <= current->octave
+                    && new_note->key < current->key) {
+                    temp = current;
+                    current = current->next;
+                }
+                new_note->next = current;
+                temp->next = new_note; 
+            //list has 1 note
+            } else if (current->next == NULL 
+                    && new_note->octave <= current->octave
+                    && new_note->key < current->key) {
+                    new_note->next = NULL;
+                    new_note->next = beat->notes;
+                    beat->notes = new_note; 
+                    
+                
+            } else { 
+                while (current->next != NULL) {
+                    current = current->next;
+                }
+                current->next = new_note;
+            }      
+             /*   
+                //current = current->next;
+            
+            //check octaves
+            if (new_note->octave <= current->octave) {
+                //check keys
+                if (new_note->key < current->key) {
+                //current = new_note->next;
+                } 
+            current->next = new_note;   
+            }
+            } */
+            
+            
+            
+            if (new_note->octave == current->octave 
+            && new_note->key == current->key) {
+               return INVALID_MUSICAL_NOTE;    
+            }                       
+                
+             
+                
+                
+            
+        }
+        
+        return VALID_NOTE;
+    }
+    
+    
+    //stage 5
+    
+    struct beat *temp;  
+    temp = track->head;
+    
+    struct beat *current;
+    current = track->selected_beat;  
+    
+    
+    if (track->selected_beat == NULL) {
+       //do nothing
+    } else {
+     
+        // Find ratio to split the length of the list
+        int p = 0; 
+        while(temp != track->selected_beat) {
+            p++;
+            temp = temp->next;
+        }
+        
+        //count how many notes till NULL
+        struct beat *counter = current;
+        int count = 0;
+        while (counter != NULL) {
+            count++;
+            counter = counter->next;
+        }
+        
+        //if range > no. of beat, make a circular linked lists
+        int q = 0; 
+        if (range_length > count) {
+            printf ("hello");
+            //make last beat connected to head using a pointer
+            
+            q = 0;
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            current->next = track->selected_beat;
+            
+            q = 0;
+            while(current != track->head && q != range_length) {  
+                q++;  
+                current = current->next;  
+            }
+        
+        } else {
+             
+            while(current->next != NULL && q != range_length) {  
+                q++;  
+                current = current->next;  
+            }
+            
+            
+        } 
+         
+        // second head node after splitting  
+        //Merge the lists
+        struct beat *head_two = temp; 
+        
+        track->head->next = current;
+        current->next = head_two;  
+        
+        //print beats after head 2
+        //struct beat *print_beats = temp;
+        
+        while (temp->next != current) {
+            //print_beats = temp->next;
+            temp = temp->next;
+        }
+        temp->next = NULL;
+    }
+
+ / Reverse a list of beats within a range of a track.
+int reverse_range(Track track, int range_length) {
+    
+    struct beat *temp;  
+    temp = track->head;
+    
+    struct beat *current;
+    current = track->selected_beat;  
+     
+    if (track->selected_beat == NULL) {
+        return 0;
+    } else { 
+        // Find ratio to split the length of the list
+        int p = 0; 
+        while(temp != track->selected_beat) {
+            p++;
+            temp = temp->next;
+        }
+        
+        //count how many notes till NULL
+        struct beat *counter = current;
+        int count = 0;
+        while (counter != NULL) {
+            count++;
+            counter = counter->next;
+        }
+        
+        //if range > no. of beat, make a circular linked lists
+        int q = 0; 
+        if (range_length >= count) {
+            printf ("hello");
+            //make last beat connected to head
+            while (current->next != NULL) {
+                current = current->next;
+            }
+            current->next = track->head;
+            
+             
+            while(current != track->head && q != range_length) {  
+                q++;  
+                current = current->next;  
+            }
+        
+        } else {
+             
+            while(current->next != NULL && q != range_length) {  
+                q++;  
+                current = current->next;  
+            }
+        } 
+        
+        //iteratively reverse the list in range of beats chosen
+        
+        struct beat *prev = current;
+        struct beat *curr = temp;
+        struct beat *next = NULL;
+        
+      
+        while (curr != temp) {
+            //save next
+            next = curr->next;
+            //reverse
+            curr->next = prev;
+            //traverse
+            prev = curr;
+            curr = next;
+        
+            temp = current;
+        }
+        
+        return (range_length - 1);
+    }
+}   

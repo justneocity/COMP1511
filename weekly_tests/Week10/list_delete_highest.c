@@ -1,0 +1,169 @@
+//Week 10 Test
+//Delete all nodes with the highest value
+//Rifa Jamal z5311190
+//1/05/2020
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+struct node {
+    struct node *next;
+    int          data;
+};
+
+struct node *delete_highest(struct node *head);
+struct node *strings_to_list(int len, char *strings[]);
+void print_list(struct node *head);
+
+// DO NOT CHANGE THIS MAIN FUNCTION
+
+int main(int argc, char *argv[]) {
+    // create linked list from command line arguments
+    struct node *head = strings_to_list(argc - 1, &argv[1]);
+
+    struct node *new_head = delete_highest(head);
+    print_list(new_head);
+
+    return 0;
+}
+
+
+//
+// Delete the node(s) in the list that contain the highest value
+// The deleted node(s) are freed.
+// The head of the list is returned.
+//
+struct node *delete_highest(struct node *head) {
+
+    //if list is empty
+    if (head == NULL) {
+        return NULL;
+    }
+    
+    //else tarverse through list and check
+    else {
+        
+        //find max value
+        int max = 0;
+        struct node *find = head;
+        while (find != NULL) { 
+            if (max < find->data) { 
+                max = find->data; 
+            }
+            find = find->next; 
+        } 
+        
+        struct node *curr = head;
+        struct node *prev = NULL;
+        
+            // If max value is in the head node  
+        if (curr != NULL && curr->data == max) { 
+            head = curr->next; // Changed head 
+            free(curr); // free old head 
+            curr = head; // Change curr 
+        } 
+      
+        // traverse through and check for values other than head 
+        while (curr != NULL) { 
+      
+             
+            // keep traversing prev to be before current 
+            // prev->next
+            while (curr != NULL && curr->data != max) { 
+                prev = curr; 
+                curr = curr->next; 
+            } 
+      
+            
+            // Unlink the node from linked list 
+            prev->next = curr->next; 
+      
+            free(curr); // Free memory 
+      
+            // Update curr for next iteration of  
+            // outer loop 
+            curr = prev->next; 
+        }  
+            
+            
+    
+        /*
+        
+        //Find how many time max value appears in list
+        int count = 0;
+        struct node *curr = head;
+        while (curr->next != NULL) {
+            if (curr->data == max) {
+                count++;
+            }
+            curr = curr->next;
+        }
+        
+        //traverse and delete highest
+        //repeat based on how many times highest occurs
+        
+        int i = 0;
+        while (i != count) {
+            struct node *p = head; 
+            struct node *remNode = NULL;
+            
+            //hightest at head
+            if (p->data == max) { 
+                head = p->next; // Changed head 
+                free(p); // free old head 
+                p = head; // Change curr 
+            }
+    
+            while (p->next != NULL && p->next->data != max) {
+                p = p->next;
+            }
+            if (p->next != NULL) {
+                remNode = p->next;
+                p->next = p->next->next;
+                free(remNode);    
+            } 
+            i++;    
+        } 
+        
+        */
+   
+    } 
+    
+    return head;   
+
+}
+
+
+// DO NOT CHANGE THIS FUNCTION
+// create linked list from array of strings
+struct node *strings_to_list(int len, char *strings[]) {
+    struct node *head = NULL;
+    int i = len - 1;
+    while (i >= 0) {
+        struct node *n = malloc(sizeof (struct node));
+        assert(n != NULL);
+        n->next = head;
+        n->data = atoi(strings[i]);
+        head = n;
+        i -= 1;
+    }   
+    return head;
+}
+
+// DO NOT CHANGE THIS FUNCTION
+// print linked list
+void print_list(struct node *head) {
+    printf("[");    
+    struct node *n = head;
+    while (n != NULL) {
+        // If you're getting an error here,
+        // you have returned an invalid list
+        printf("%d", n->data);
+        if (n->next != NULL) {
+            printf(", ");
+        }
+        n = n->next;
+    }
+    printf("]\n");
+}

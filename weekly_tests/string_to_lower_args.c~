@@ -1,0 +1,36 @@
+//Weekly Test week 8
+//Rifa Jamal z5311190
+//Created on 14/04/2020
+
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
+
+
+
+int main(int argc, char *argv[]) {
+
+    //since argv[0] is the name of program we want to skip it    
+    int i = 1;
+    
+    int length = strlen(*argv);
+    
+    while (i < argc) {
+        
+        int j = 0;
+        while (j < length) {
+        
+            if (argv[i][j] >= 'A' && argv[i][j] <= 'Z') {
+                argv[i][j] = tolower(argv[i][j]);
+            }
+            j++;
+        }
+        fputs(argv[i], stdout);
+        printf(" ");
+        i++;
+    }
+    printf("\n");
+
+}
+

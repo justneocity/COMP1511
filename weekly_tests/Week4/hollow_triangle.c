@@ -1,0 +1,40 @@
+//Week 4 Weekly Test
+//Rifa Jamal z5311190
+//18/03/2020
+
+#include <stdio.h>
+
+int main(void) {
+
+    int row;
+   
+    
+    //int column;
+   
+    printf("Enter size: ");
+    scanf("%d", &row);
+    
+    int counterOne = 1;
+    while (counterOne <= row) {
+        printf("*");
+        int counterTwo = 2;
+        while (counterTwo <= counterOne) {
+            if (counterTwo == counterOne || counterOne == row) {
+                printf("*");
+            } else {
+                printf(" ");
+            }
+            counterTwo++; 
+          
+        }
+
+        counterOne++;
+        printf("\n");
+    }
+    
+    
+   
+    
+    return 0;
+
+}

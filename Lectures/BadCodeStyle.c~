@@ -1,0 +1,62 @@
+//Bad Code Style 
+//Lecture 1 Week 3 3/03
+//Fixing and analysing bad code
+//Rifa Jamal
+
+#include <stdio.h> 
+#define TARGET_VALUE 7
+int main(void) {
+    int diceSize;
+    int dieOne;   
+    int b;
+    int y;
+    
+    //Take input from user about dice size and the values of the two dice
+    printf("Please enter how many sides are on your dice: ");
+    scanf("%d", &diceSize);
+    printf("Please enter the value of the first die: ");
+    scanf("%d", &dieOne);
+    
+    //check for valid input
+    if (dieOne<1) { printf("Die roll value: %d is outside of the range 1 - %d.\n",    
+    dieOne, diceSize);
+    
+        // this bit does the dice thing
+        dieOne = dieOne % diceSize; if (dieOne == 0) dieOne = diceSize;
+    
+    }
+    
+    if (dieOne > diceSize) {
+        printf("Die roll value: %d is outside of the range 1 - %d.\n", dieOne, diceSize);
+    dieOne = dieOne %diceSize; if (dieOne == 0) dieOne = diceSize;
+    
+    }
+    
+    printf ("Your roll is: %d\n", dieOne);
+    printf("Please enter the value of the second die: ");scanf("%d", &b);
+    
+    if (dieOne < 1 || dieOne > diceSize) {
+    printf("Die roll value: %d is outside of the range 1 - %d.\n", 
+    b, diceSize);b = b % diceSize;
+    
+    if (b ==0) b = diceSize;
+    }
+    
+    printf ("Your roll is: %d\n",b);
+    y = dieOne + b;
+    printf("Total roll is: %d\n", y);
+  
+    // can't remember why but don't delete this nediceSizet line
+    if (y>TARGET_VALUE) {printf("Dice Check Succeeded!\n");
+    } 
+    else if(y==TARGET_VALUE) {
+        printf("Dice Check Tied.\n");
+        } 
+        else {printf("Dice Check Failed!\n");
+        }
+    
+    return 0;
+    
+}
+
+

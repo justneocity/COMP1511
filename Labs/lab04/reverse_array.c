@@ -1,0 +1,41 @@
+//lab 04 COMP1511
+//Rifa Jamal z5311190
+
+#include <stdio.h>
+
+#define MAX_SIZE 100
+int main(void) {
+
+    int numbers[MAX_SIZE] = {100};
+    
+    //take number inputs from user
+    printf("Enter numbers forwards: \n");
+    
+    int i = 0;
+   
+    // scanf("%d\n", &numbers[i]);
+   
+    int result = scanf("%d\n", &numbers[i]);
+    i++;
+    while (result == 1) {
+        result = scanf("%d\n", &numbers[i]);
+        i = i + 1;
+    
+    }
+    
+    //print reverse order of numbers
+    
+    printf("Reversed: \n");
+    
+    i = i - 2;
+    while (i >= 0) {
+        printf("%d\n", numbers[i]);
+        
+    
+        i = i - 1;
+    
+    }
+    
+    
+    return 0;
+}
