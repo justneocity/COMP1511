@@ -1,0 +1,16 @@
+//Revision
+//Print out what use types in
+//Rifa Jamal z5311190
+//Created on 1/05/2020
+
+
+#include <stdio.h>
+
+int main(void) { 
+    int ch = getchar();
+    while (ch != EOF) {
+        putchar(ch);
+        ch = getchar();
+    }   
+    return 0;
+}

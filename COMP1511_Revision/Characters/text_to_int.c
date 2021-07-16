@@ -1,0 +1,17 @@
+//Revision
+//Print out decimal value of what user types in
+//Rifa Jamal z5311190
+//Created on 1/05/2020
+
+#include <stdio.h>
+
+int main(void) { 
+    int ch = getchar();
+    while (ch != EOF) {
+        //instead of having putchar use this below
+        printf("%3d\n", ch);
+        
+        ch = getchar();
+    }   
+    return 0;
+}
